@@ -12,6 +12,8 @@ PC・スマホの両方でプレイ可能で、GitHub Pagesを利用してWebブ
 
 ## プレイ方法
 
+[https://karaage0703.github.io/yasashi-tower/](https://karaage0703.github.io/yasashi-tower/)にアクセス
+
 1. タイトル画面の「ゲーム開始」ボタンをクリック
 2. 画面上のマップ上にタワーを設置
 3. 敵の進行を防ぎ、全てのウェーブをクリア
@@ -46,7 +48,7 @@ yasashi-tower/
 1. リポジトリをクローン:
 
 ```bash
-git clone https://github.com/ユーザー名/yasashi-tower.git
+git clone https://github.com/karaage0703/yasashi-tower.git
 cd yasashi-tower
 ```
 
@@ -56,7 +58,7 @@ cd yasashi-tower
 python -m http.server
 ```
 
-3. ブラウザで「http://localhost:8000」にアクセス
+3. ブラウザで「[http://localhost:8000](http://localhost:8000)」にアクセス
 
 ## Git運用ルール
 
