@@ -1,54 +1,74 @@
-# Pythonプロジェクト
+# Yasashi Tower - やさしいタワーディフェンスゲーム
 
-このリポジトリはPythonプロジェクトのボイラープレートです。
+このリポジトリはPhaser.jsを使用した初心者向けのタワーディフェンスゲームです。
+PC・スマホの両方でプレイ可能で、GitHub Pagesを利用してWebブラウザ上で動作します。
 
-## 機能
+## 特徴
 
-- setuptoolsを使用したシンプルなパッケージング
-- src/とtests/ディレクトリによる構造化
-- メインプログラムのエントリーポイント
-- pytestを使用したテスト例
-- Dockerによる開発環境のサポート
+- HTML5/JavaScript/Phaser.jsを使用したブラウザゲーム
+- シンプルな操作で遊べるタワーディフェンスゲーム
+- PC・スマホの両方に対応したレスポンシブデザイン
+- GitHub Pagesを使用した簡単なデプロイ
 
-## 使い方
+## プレイ方法
 
-メインプログラムの実行:
+1. タイトル画面の「ゲーム開始」ボタンをクリック
+2. 画面上のマップ上にタワーを設置
+3. 敵の進行を防ぎ、全てのウェーブをクリア
 
-    python -m my_project.main
+### ゲームのルール
 
-### Dockerを使用する場合
+- 敵がルートに沿って進み、ゴールに到達するとライフが減少
+- タワーを戦略的に配置して敵を倒す
+- ライフが0になるとゲームオーバー
+- 全てのウェーブをクリアするとゲームクリア
 
-開発環境をDockerで構築することもできます。
+## 開発
 
-1. 開発環境の起動:
+### プロジェクト構造
 
-```bash
-docker compose up -d
+```
+yasashi-tower/
+├── index.html        # メインのHTMLファイル
+├── assets/           # 画像・音声などのリソース
+│   ├── images/       # 画像ファイル
+│   └── sounds/       # 音声ファイル
+├── src/              # JavaScriptソースコード
+│   ├── game.js       # ゲームのメインクラス
+│   ├── scenes/       # Phaserのシーン
+│   ├── entities/     # ゲームエンティティ
+│   └── managers/     # ゲーム管理クラス
+└── styles/           # CSSファイル
 ```
 
-2. コンテナ内でコマンドを実行:
+### ローカルでの実行方法
+
+1. リポジトリをクローン:
 
 ```bash
-# コンテナのシェルにアクセス
-docker compose exec app /bin/bash
+git clone https://github.com/ユーザー名/yasashi-tower.git
+cd yasashi-tower
 ```
 
-3. 開発環境の停止:
+2. HTTPサーバーを起動（例: Python 3の場合):
 
 ```bash
-docker compose down
+python -m http.server
 ```
 
-## テスト
+3. ブラウザで「http://localhost:8000」にアクセス
 
-テストの実行:
+## Git運用ルール
 
-    pytest
+### ブランチ戦略
 
-### Dockerでのテスト実行
+- `main` ブランチ: 安定版（リリース用）
+- `develop` ブランチ: 開発用（最新の開発状況を反映）
+- `feature/xxx` ブランチ: 機能ごとの開発用
 
-コンテナ内でテストを実行:
+### コミットメッセージのルール
 
-```bash
-docker compose exec app pytest
-```
+- `[Add]` 新機能の追加
+- `[Fix]` バグ修正
+- `[Update]` 仕様変更
+- `[Refactor]` コード整理
