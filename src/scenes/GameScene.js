@@ -14,10 +14,15 @@ class GameScene extends Phaser.Scene {
         this.totalWaves = 5;
         this.isWaveActive = false;
         
+        // タワー設置の制限
+        this.maxTowers = 5;         // 最大設置可能数
+        this.remainingTowers = 5;   // 残りの設置可能数
+        
         // UI要素
         this.lifeText = null;
         this.waveText = null;
         this.scoreText = null;
+        this.towerCountText = null; // タワー設置可能数表示
     }
 
     create() {
@@ -129,6 +134,12 @@ class GameScene extends Phaser.Scene {
             fill: '#000000'
         });
         
+        // タワー設置可能数表示
+        this.towerCountText = this.add.text(20, 110, `タワー: ${this.remainingTowers}/${this.maxTowers}`, {
+            font: '18px Arial',
+            fill: '#000000'
+        });
+        
         // タワー設置ボタン
         const towerButton = this.add.image(720, 50, 'tower').setScale(0.8);
         towerButton.setInteractive();
@@ -149,12 +160,20 @@ class GameScene extends Phaser.Scene {
         if (this.lifeText) this.lifeText.setText(`ライフ: ${this.lives}`);
         if (this.waveText) this.waveText.setText(`ウェーブ: ${this.currentWave}/${this.totalWaves}`);
         if (this.scoreText) this.scoreText.setText(`スコア: ${this.score}`);
+        if (this.towerCountText) this.towerCountText.setText(`タワー: ${this.remainingTowers}/${this.maxTowers}`);
     }
 
     /**
      * タワーを設置する
      */
     placeTower(x, y) {
+        // タワー設置数の制限チェック
+        if (this.remainingTowers <= 0) {
+            // 設置可能数を超えている場合は警告表示
+            this.showWarningMessage("タワーの設置上限に達しました");
+            return;
+        }
+        
         // 座標を適切なグリッドにスナップ
         const gridSize = 50;
         const gridX = Math.floor(x / gridSize) * gridSize + gridSize / 2;
@@ -163,6 +182,41 @@ class GameScene extends Phaser.Scene {
         // 新しいタワーを作成
         const tower = new Tower(this, gridX, gridY);
         this.towers.push(tower);
+        
+        // 残りのタワー設置可能数を減らす
+        this.remainingTowers--;
+        
+        // UI更新
+        this.updateUI();
+    }
+    
+    /**
+     * 警告メッセージを表示する
+     */
+    showWarningMessage(message) {
+        // 既存の警告メッセージがあれば削除
+        if (this.warningText) {
+            this.warningText.destroy();
+        }
+        
+        // 新しい警告メッセージを表示
+        this.warningText = this.add.text(
+            this.cameras.main.width / 2,
+            150,
+            message,
+            {
+                font: 'bold 20px Arial',
+                fill: '#ff0000'
+            }
+        ).setOrigin(0.5);
+        
+        // 数秒後に自動的に消える
+        this.time.delayedCall(2000, () => {
+            if (this.warningText) {
+                this.warningText.destroy();
+                this.warningText = null;
+            }
+        });
     }
 
     /**
