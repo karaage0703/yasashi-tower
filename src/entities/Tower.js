@@ -94,7 +94,7 @@ class Tower {
 
     /**
      * 敵を攻撃する
-     * 
+     *
      * @param {Enemy} enemy - 攻撃対象の敵
      */
     attack(enemy) {
@@ -102,24 +102,96 @@ class Tower {
         
         console.log(`Tower attacks enemy at (${enemy.x}, ${enemy.y})`);
         
-        // 攻撃エフェクト（仮の実装）
-        const line = this.scene.add.line(
-            0, 0,
-            this.x, this.y,
-            enemy.x, enemy.y,
-            0xff0000
-        ).setOrigin(0, 0);
-        
-        // エフェクトを短時間で消す
-        this.scene.time.delayedCall(100, () => {
-            line.destroy();
-        });
+        // 攻撃エフェクト（改善版）
+        this.createAttackEffect(enemy);
         
         // ダメージを与える
         enemy.takeDamage(this.damage);
         
         // クールダウンを設定
         this.attackCooldown = 1 / this.attackSpeed;
+    }
+
+    /**
+     * 攻撃エフェクトを作成
+     *
+     * @param {Enemy} enemy - 攻撃対象の敵
+     */
+    createAttackEffect(enemy) {
+        // 砲塔から発射エフェクト
+        const muzzleFlash = this.scene.add.circle(this.x, this.y, 8, 0xffff00, 0.8);
+        
+        // 発射エフェクトのアニメーション
+        this.scene.tweens.add({
+            targets: muzzleFlash,
+            alpha: 0,
+            scaleX: 0.5,
+            scaleY: 0.5,
+            duration: 100,
+            onComplete: () => {
+                muzzleFlash.destroy();
+            }
+        });
+        
+        // 砲身の中点
+        const midX = (this.x + enemy.x) / 2;
+        const midY = (this.y + enemy.y) / 2;
+        
+        // ビームエフェクト
+        const beam = this.scene.add.graphics();
+        beam.lineStyle(3, 0x4a90e2, 0.8);
+        beam.beginPath();
+        beam.moveTo(this.x, this.y);
+        beam.lineTo(enemy.x, enemy.y);
+        beam.strokePath();
+        
+        // 小さな発光点をビームに沿って複数配置
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y);
+        const segments = Math.floor(distance / 20);
+        
+        for (let i = 1; i < segments; i++) {
+            const t = i / segments;
+            const pointX = Phaser.Math.Linear(this.x, enemy.x, t);
+            const pointY = Phaser.Math.Linear(this.y, enemy.y, t);
+            
+            const glowPoint = this.scene.add.circle(
+                pointX,
+                pointY,
+                2 + Math.random() * 2,
+                0x7fb5ff,
+                0.7
+            );
+            
+            // 発光点のアニメーション
+            this.scene.tweens.add({
+                targets: glowPoint,
+                alpha: 0,
+                duration: 100 + Math.random() * 200,
+                onComplete: () => {
+                    glowPoint.destroy();
+                }
+            });
+        }
+        
+        // 敵への衝撃エフェクト
+        const impact = this.scene.add.circle(enemy.x, enemy.y, 10, 0x7fb5ff, 0.8);
+        
+        // 衝撃エフェクトのアニメーション
+        this.scene.tweens.add({
+            targets: impact,
+            alpha: 0,
+            scaleX: 1.5,
+            scaleY: 1.5,
+            duration: 200,
+            onComplete: () => {
+                impact.destroy();
+            }
+        });
+        
+        // ビームエフェクトを消す
+        this.scene.time.delayedCall(100, () => {
+            beam.destroy();
+        });
     }
 
     /**
