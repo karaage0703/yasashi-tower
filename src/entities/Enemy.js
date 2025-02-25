@@ -117,11 +117,8 @@ class Enemy {
         
         console.log('Enemy defeated');
         
-        // 爆発エフェクト（仮の実装）
-        const explosion = this.scene.add.circle(this.x, this.y, 20, 0xff0000, 1);
-        this.scene.time.delayedCall(200, () => {
-            explosion.destroy();
-        });
+        // 爆発エフェクト（改善版）
+        this.createExplosionEffect();
         
         // ゲームマネージャーに通知
         if (this.scene.gameManager) {
@@ -133,6 +130,59 @@ class Enemy {
         
         // スプライトの破棄
         this.destroy();
+    }
+    
+    /**
+     * 爆発エフェクトを作成
+     */
+    createExplosionEffect() {
+        // 爆発の複数のパーティクル
+        const particleColors = [0xff0000, 0xff7700, 0xffff00];
+        const particleCount = 10;
+        
+        for (let i = 0; i < particleCount; i++) {
+            // ランダムな色とサイズのパーティクル
+            const size = Phaser.Math.Between(5, 10);
+            const color = Phaser.Utils.Array.GetRandom(particleColors);
+            
+            // パーティクルの作成
+            const particle = this.scene.add.circle(this.x, this.y, size, color);
+            
+            // ランダムな方向と速度
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Phaser.Math.Between(1, 3);
+            const dx = Math.cos(angle) * speed;
+            const dy = Math.sin(angle) * speed;
+            
+            // パーティクルのアニメーション
+            this.scene.tweens.add({
+                targets: particle,
+                x: this.x + dx * 20,
+                y: this.y + dy * 20,
+                alpha: 0,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                duration: 500,
+                onComplete: () => {
+                    particle.destroy();
+                }
+            });
+        }
+        
+        // 爆発の中心の閃光
+        const flash = this.scene.add.circle(this.x, this.y, 15, 0xffffff);
+        
+        // 閃光のアニメーション
+        this.scene.tweens.add({
+            targets: flash,
+            alpha: 0,
+            scaleX: 2,
+            scaleY: 2,
+            duration: 300,
+            onComplete: () => {
+                flash.destroy();
+            }
+        });
     }
 
     /**
